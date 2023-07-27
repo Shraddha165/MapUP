@@ -1,0 +1,172 @@
+npx create-react-app mapping-app
+cd mapping-app
+
+Step 2: Install required packages
+Install the necessary packages for Ant.Design, Redux, React-Redux, and Turf.js.
+npm install antd redux react-redux turf
+
+Step 3: Set up Redux
+Create a store folder inside the src directory and set up the Redux store, actions, and reducers.
+
+src/store/actions.js
+// Define your Redux actions here
+src/store/reducers.js
+// Define your Redux reducers here
+src/store/index.js
+import { createStore, combineReducers } from 'redux';
+import { reducers } from './reducers';
+
+const rootReducer = combineReducers({
+  // Add your reducers here
+  // For example: regions: reducers.regions,
+});
+
+const store = createStore(rootReducer);
+
+export default store;
+
+Step 4: Create Components
+Create the following components in separate files:
+
+src/components/FormInput.js
+import React from 'react';
+import { Select, Button } from 'antd';
+
+const { Option } = Select;
+
+const FormInput = ({ onSelectChange, onSubmitClick }) => {
+  return (
+    <div>
+      <Select defaultValue="Select a region" onChange={onSelectChange}>
+        <Option value="usa">United States</Option>
+        <Option value="india">India</Option>
+        <Option value="uk">United Kingdom</Option>
+      </Select>
+      <Button type="primary" onClick={onSubmitClick}>Load</Button>
+    </div>
+  );
+};
+
+export default FormInput;
+
+src/components/RegionInfo.js
+import React from 'react';
+import { Card } from 'antd';
+
+const RegionInfo = ({ currency, speedUnit, distanceUnit, volumeUnit, timezone }) => {
+  return (
+    <Card title="Region Information">
+      <p>Currency: {currency}</p>
+      <p>Speed Unit: {speedUnit}</p>
+      <p>Distance Unit: {distanceUnit}</p>
+      <p>Volume Unit: {volumeUnit}</p>
+      <p>Timezone: {timezone}</p>
+    </Card>
+  );
+};
+
+export default RegionInfo;
+
+src/components/OSMMap.js
+import React from 'react';
+
+const OSMMap = () => {
+  // Your map implementation using OSM goes here
+  return (
+    <div>
+      Map will be displayed here
+    </div>
+  );
+};
+
+export default OSMMap;
+
+Step 5: Implement the main App component
+Modify the src/App.js file to include the main App component with header, sidebar, footer, and the map.
+import React from 'react';
+import { Layout, Switch } from 'antd';
+import { useSelector, useDispatch } from 'react-redux';
+import { setRegion } from './store/actions';
+import FormInput from './components/FormInput';
+import RegionInfo from './components/RegionInfo';
+import OSMMap from './components/OSMMap';
+
+const { Header, Sider, Content, Footer } = Layout;
+
+const App = () => {
+  const selectedRegion = useSelector((state) => state.selectedRegion);
+  const dispatch = useDispatch();
+
+  const handleSelectChange = (value) => {
+    // Implement dispatch to set selected region in Redux state
+    dispatch(setRegion(value));
+  };
+
+  const handleSubmitClick = () => {
+    // Implement loading the map and fetching region information
+  };
+
+  return (
+    <Layout style={{ minHeight: '100vh' }}>
+      <Header>
+        {/* Add header content here */}
+        <div>Dummy Login/Logout, Profile Button</div>
+      </Header>
+      <Layout>
+        <Sider collapsible>
+          {/* Add sidebar content here */}
+          <FormInput onSelectChange={handleSelectChange} onSubmitClick={handleSubmitClick} />
+          <Switch />
+        </Sider>
+        <Content style={{ padding: '24px' }}>
+          <OSMMap />
+        </Content>
+      </Layout>
+      <Footer>
+        {/* Add footer content here */}
+        <div>Plain Text Footer</div>
+      </Footer>
+    </Layout>
+  );
+};
+
+export default App;
+export const SET_REGION = 'SET_REGION';
+
+export const setRegion = (region) => ({
+  type: SET_REGION,
+  payload: region,
+});
+import { SET_REGION } from './actions';
+
+const initialState = {
+  selectedRegion: null,
+};
+
+export const reducers = (state = initialState, action) => {
+  switch (action.type) {
+    case SET_REGION:
+      return {
+        ...state,
+        selectedRegion: action.payload,
+      };
+    default:
+      return state;
+  }
+};
+Step 7: Connect Redux to the App
+In the src/index.js file, wrap the App component with the Redux Provider to connect it to the Redux store.
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import store from './store';
+import App from './App';
+
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById('root')
+);
+
+
